@@ -1,0 +1,31 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.#*
+\#*#
+
+# Local previews / build output (none currently, but reserved)
+node_modules/
+dist/
+.cache/
+.parcel-cache/
+
+# Python local server pyc droppings
+__pycache__/
+*.pyc
+
+# Logs / scratch
+*.log
+.tmp/
+tmp/
+scratch/

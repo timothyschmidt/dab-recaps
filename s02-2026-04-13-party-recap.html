@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 2 — Welcome to Ottahofn</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=MedievalSharp&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-alt: #16161f;
+    --border: #2a2235;
+    --border-glow: #3d2a4a;
+    --gold: #c9a84c;
+    --gold-dim: #8a7234;
+    --gold-bright: #e8c85a;
+    --red: #8b2d2d;
+    --red-bright: #c44040;
+    --text: #d4cfc6;
+    --text-dim: #8a857c;
+    --text-bright: #ede8df;
+    --void-purple: #2d1b4e;
+    --void-glow: #5a3d7a;
+    --frost: #4a6d8a;
+  }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Subtle texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(45, 27, 78, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(139, 45, 45, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── Header ── */
+  .session-header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .session-header::after {
+    content: '⛧';
+    display: block;
+    position: absolute;
+    bottom: -0.7em;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deep);
+    padding: 0 1rem;
+    color: var(--gold-dim);
+    font-size: 1.2rem;
+  }
+
+  .session-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 0 40px rgba(201, 168, 76, 0.15);
+  }
+
+  .session-meta {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .session-meta strong {
+    color: var(--text);
+    font-style: normal;
+  }
+
+  /* ── Summary block ── */
+  .summary-block {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-alt) 100%);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  /* ── Section headings ── */
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--gold);
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+    margin: 2rem 0 0.75rem;
+  }
+
+  /* ── Choice cards ── */
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0 2rem;
+  }
+
+  .choice {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    transition: border-color 0.2s;
+  }
+
+  .choice:hover {
+    border-color: var(--border-glow);
+  }
+
+  .choice-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .choice-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    color: var(--text-bright);
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .choice-desc {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── Loot list ── */
+  .loot-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .loot-list li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.5);
+  }
+
+  .loot-list li:last-child { border-bottom: none; }
+
+  .loot-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold-dim);
+    font-size: 0.6rem;
+    top: 0.85rem;
+  }
+
+  .loot-item { color: var(--text-bright); font-weight: 600; }
+  .loot-note { color: var(--text-dim); font-size: 0.95rem; }
+
+  /* ── NPC Table ── */
+  .npc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 2rem;
+    font-size: 0.95rem;
+  }
+
+  .npc-table thead th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .npc-table tbody td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.4);
+    vertical-align: top;
+  }
+
+  .npc-table tbody tr:hover {
+    background: rgba(42, 34, 53, 0.2);
+  }
+
+  .npc-name {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .npc-mentioned {
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+
+  /* ── Places ── */
+  .places-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .places-list li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.5);
+  }
+
+  .places-list li:last-child { border-bottom: none; }
+
+  .places-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0.2rem;
+    color: var(--frost);
+    font-size: 0.9rem;
+    top: 0.55rem;
+  }
+
+  .place-name { color: var(--text-bright); font-weight: 600; }
+
+  /* ── Narrative recap ── */
+  .recap-divider {
+    text-align: center;
+    margin: 3rem 0 2rem;
+    position: relative;
+  }
+
+  .recap-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
+  }
+
+  .recap-divider span {
+    position: relative;
+    background: var(--bg-deep);
+    padding: 0 1.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  .recap p {
+    margin-bottom: 1rem;
+  }
+
+  .recap strong {
+    color: var(--text-bright);
+  }
+
+  .recap .intel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 1rem 0;
+  }
+
+  .recap .intel-list li {
+    padding: 0.6rem 0 0.6rem 1.5rem;
+    position: relative;
+    border-left: 2px solid var(--void-purple);
+    margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
+  }
+
+  .recap .intel-list li::before {
+    content: '⬥';
+    position: absolute;
+    left: -0.55rem;
+    color: var(--void-glow);
+    font-size: 0.5rem;
+    top: 0.75rem;
+    background: var(--bg-deep);
+    padding: 0.2rem 0;
+  }
+
+  .ooc-note {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+
+  .ooc-note::before {
+    content: 'OOC';
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    margin-right: 0.5rem;
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    vertical-align: 1px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .container { padding: 1rem; }
+    h1 { font-size: 1.8rem; }
+    .choices { grid-template-columns: 1fr; }
+    .npc-table { font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="session-header">
+    <div class="session-number">Session II</div>
+    <h1>Welcome to Ottahofn</h1>
+    <div class="session-meta">
+      Monday 13 April 2026 · <strong>Full table</strong><br>
+      Tim (Neko) · Adam (Elenor) · Michael (Lucien) · Scott (Ashen) · Reign (Vergrad) · Joel (Yorika)
+    </div>
+  </header>
+
+  <div class="summary-block">
+    The party limped back to Ottahofn after the rift storm, got patched up by Kjarval's lieutenant Brynja in exchange for signing on for another mission, and picked up a new member — Neko, a hulking Necramechanica with a fixation on "kitty" (Ashen). After surviving an alley ambush (goblin boss killed, troll paid off with 5 copper), the party spent the evening at The Rotting Boot Inn where the Mothkin barkeep Julian Davros revealed himself as one of Lilith's spies and dropped major intel on the Rewritten, their leader Fionrir Starsundr, and the Order of the Ashen Rose. Morning brought Void Taint saves — Vergrad cleared, Yorika's whispers remain. The session ended at the docks with two leads: another storm mission or hunting a sea creature called "Shark Guts" for a 15gp bounty.
+  </div>
+
+  <h2>Where We Left Off</h2>
+
+  <div class="choices">
+    <div class="choice">
+      <div class="choice-number">Option I</div>
+      <div class="choice-title">Another Rift Storm Mission</div>
+      <div class="choice-desc">Reliable income, dangerous, works off the debt. 15sp per extra shard beyond quota.</div>
+    </div>
+    <div class="choice">
+      <div class="choice-number">Option II</div>
+      <div class="choice-title">Hunt the Shark Guts</div>
+      <div class="choice-desc">15gp bounty. Need a boat and a captain crazy enough to go — Imar Marrowhands might be that captain.</div>
+    </div>
+  </div>
+
+  <h2>Loot &amp; Money</h2>
+  <ul class="loot-list">
+    <li><span class="loot-item">Scimitar</span> <span class="loot-note">— looted from goblin boss, kept to sell</span></li>
+    <li><span class="loot-item">Short bow + quiver</span> <span class="loot-note">— Yorika</span></li>
+    <li><span class="loot-item">Storm contract payout (s01)</span> <span class="loot-note">— 15sp each</span></li>
+    <li><span class="loot-item">Lodging</span> <span class="loot-note">— Lucien spent 5sp (room for self + Elenor, shared bunk for others)</span></li>
+  </ul>
+
+  <h2>People Met</h2>
+  <table class="npc-table">
+    <thead><tr><th>Who</th><th>What</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="npc-name">Brynja Fjotur</td><td>Valcarrion Cleric, Kjarval's lieutenant</td><td>Barracks</td></tr>
+      <tr><td class="npc-name">Gorum Selkjforn</td><td>Contract handler, hands out jobs</td><td>Barracks</td></tr>
+      <tr><td class="npc-name">Neko</td><td>Necramechanica Barbarian — new party member (Tim)</td><td>Barracks road</td></tr>
+      <tr><td class="npc-name">Galthor</td><td>Troll, owns the alley, has a toll</td><td>Alley</td></tr>
+      <tr><td class="npc-name">Julian Davros</td><td>Mothkin barkeep, Lilith's spy/ally</td><td>The Rotting Boot Inn</td></tr>
+      <tr><td class="npc-name">Eirny Vefstari</td><td>Aetherborn Warlock, Rewritten marked</td><td>The Rotting Boot Inn</td></tr>
+      <tr><td class="npc-name">Koal Dockhand</td><td>Eidolon dock hand, Lilith's enslaved familiar</td><td>The docks</td></tr>
+      <tr><td class="npc-name">Penelope Kresh</td><td class="npc-mentioned">Leatherworker, Lilith's familiar — mentioned, not met</td><td>—</td></tr>
+      <tr><td class="npc-name">Imar Marrowhands</td><td class="npc-mentioned">Captain (wears a bicorn hat, half his face is bone), hunting Shark Guts — mentioned, not met</td><td>—</td></tr>
+      <tr><td class="npc-name">Fionrir Starsundr</td><td class="npc-mentioned">Leader the Rewritten serve — mentioned by Julian</td><td>—</td></tr>
+      <tr><td class="npc-name">Relert Bucephelous</td><td class="npc-mentioned">Lucien's handler in Lilith's network — mentioned by Julian</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Places</h2>
+  <ul class="places-list">
+    <li><span class="place-name">Ottahofn barracks</span> — where contracts are given and Kjarval/Brynja operate</li>
+    <li><span class="place-name">The alley</span> — Galthor's turf, has a toll</li>
+    <li><span class="place-name">The Rotting Boot Inn</span> — main social hub, Julian's bar, lodging available</li>
+    <li><span class="place-name">The docks / Slaughter Ramp</span> — harbor area, Cole works here, boats to the ice shelves</li>
+  </ul>
+
+  <div class="recap-divider"><span>Session Recap</span></div>
+
+  <div class="recap">
+
+    <h3>Previously…</h3>
+    <p>The party stumbled back into Ottahofn after their first rift storm mission — battered, two members unconscious, and two carrying fresh Void Taint whispers in their heads. Not the triumphant return anyone hoped for, but hey — the shards got charged.</p>
+
+    <h3>Back at the Barracks</h3>
+    <p>The party met <strong>Brynja</strong> — a towering Valcarrion Cleric and Kjarval's right hand. She's stern, clinical, and immediately assessed the group with a mix of scepticism and grudging interest (she wrote "problematic" in her book while looking at them). She healed the downed members with Cure Wounds but made it clear this wasn't charity — Kjarval wants more shards, and the party is now signed up for another storm mission. Extra shards beyond quota earn 15sp each, which helps chip away at Vergrad's 36gp debt.</p>
+    <p><strong>Neko arrived.</strong> A hulking Necramechanica lumbered down the path after the group, fixated on "kitty" (Ashen). Tim's first session. Neko got assigned to the party — another set of hands for the next mission.</p>
+    <p><strong>A shadowy figure</strong> was spotted watching the party leave the barracks. It deliberately let itself be seen, then phased straight through a wall and vanished. Nobody knows who or what it was.</p>
+
+    <h3>Alley Ambush</h3>
+    <p>On the way through town, a goblin boss and his crew jumped the party in a narrow alley. Highlights: Neko cleaved the goblin boss in his first ever combat, Elenor critted with Eldritch Blast but then fell 30 feet and went down <em>again</em> (death saves and everything), and the real threat turned out to be <strong>Galthor</strong> — a troll who lumbered around the corner as backup. The party talked Galthor down with 4 copper + 1 apology copper. Turns out the goblin had persuaded the troll to shake down passers-by, and Galthor's alley has a fixed toll price. Loot: a scimitar (kept to sell) and a short bow + quiver (Yorika claimed them).</p>
+
+    <h3>The Rotting Boot Inn</h3>
+    <p>The party's first real social hub in Ottahofn. The Mothkin barkeep, <strong>Julian Davros</strong>, turned out to be one of Lilith's spies — and an ally of sorts to Lucien and Elenor. Over the course of the evening he dropped some serious intel:</p>
+    <ul class="intel-list">
+      <li>The Rewritten serve someone called <strong>Fionrir Starsundr</strong>, who has the power to "rewrite" her followers — wiping their memories, binding them to service, marked by silver threads stitched below their eyes. The temporal energy from the rift storms gets shipped to <strong>Moonguard</strong> for this purpose.</li>
+      <li>Lilith has a small network of "familiars" (mortal agents) in Ottahofn: Julian himself, a leatherworker named <strong>Penelope Kresh</strong> (has access to the Rewritten), and <strong>Koal Dockhand</strong> at the docks (enslaved, not willing).</li>
+      <li>There's a member of the <strong>Order of the Ashen Rose</strong> hiding at the church in town. Kjarval gave them amnesty. Julian warned the party to stay well clear — the Order are dangerous and fanatical.</li>
+    </ul>
+    <p>Other inn moments: Lucien performed for the crowd (rolled a 25 — the inn loved it), Elenor fed on an unconscious drugged person Julian provided (vampiric sustenance, apparently routine), and the party noticed <strong>Eirny Vefstari</strong> — an Aetherborn warlock whose form constantly shifts in and out of solidity. She has the Rewritten silver thread marks and something keeping her in Ottahofn. Mysterious.</p>
+    <p><strong>Elenor dropped some Necramechanica knowledge</strong> — about a thousand exist, created before the Orrery, extremely rare. The souls inside them have "one of the strongest wills known" and an unfulfilled purpose they need to see through. Elenor's mother Severina apparently used to commission one to help with the produce back home.</p>
+    <p><strong>Vergrad's lore moment.</strong> His race are called <strong>Thornwrought</strong> — guardians bonded to Phoernikstrees (mother trees). When a Phoernikseed grows into a Phoernikstree and bears its first fruit, the fruit sprouts a Thornwrought guardian. Vergrad is his mother tree's "first fruit." He's over 320 years old.</p>
+
+    <h3>Morning After</h3>
+    <p><strong>Void Taint saves.</strong> Vergrad passed — his mind cleared, taint gone. Yorika failed — the whispers remain.</p>
+    <p>The party discussed their options over breakfast. Vergrad's debt keeps them anchored to Ottahofn, and the rift storm missions are the most reliable way to pay it off. Running was discussed and dismissed — they'd get a bounty placed and have no money for transport anyway. Julian was asked to scrounge supplies for the next mission.</p>
+
+    <h3>The Docks</h3>
+    <p>The party visited <strong>Koal Dockhand</strong> — a glowing green Eidolon dock hand, one of Lilith's enslaved familiars. He can't leave (they won't let him on boats anymore because he keeps trying to escape). Cole offered a lead: a sea creature called <strong>"Shark Guts"</strong> that can be lured from the ice shelves and sells for <strong>15 gold</strong>. He pointed the party toward <strong>Imar Marrowhands</strong> — wears a bicorn hat, most of the flesh missing off his face — who's supposedly going out to hunt it.</p>
+
+    <h3>Blood Pact</h3>
+    <p>Ashen approached Neko and proposed a blood pact — family. Ashen cut his arm, Neko cut tubes releasing hydraulic fluid, they clasped hands. "We are brothers. Family means we will always stand together. Bitter end." As they spoke, Ashen had a flash of memory — golden light, grasping hands with another person, a feeling that he's said these words before. Then it was gone.</p>
+    <div class="ooc-note">Brett noted that Neko's hydraulic fluid is "really bad for you." Consequences TBD.</div>
+
+  </div>
+
+  <div class="footer">
+    Death And Beyond · Session II · Ottahofn
+  </div>
+
+</div>
+</body>
+</html>

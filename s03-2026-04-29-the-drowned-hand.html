@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 3 — The Hand of a Drowned God (Technical Summary)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-alt: #16161f;
+    --border: #2a2235;
+    --border-glow: #3d2a4a;
+    --gold: #c9a84c;
+    --gold-dim: #8a7234;
+    --gold-bright: #e8c85a;
+    --red: #8b2d2d;
+    --red-bright: #c44040;
+    --text: #d4cfc6;
+    --text-dim: #8a857c;
+    --text-bright: #ede8df;
+    --void-purple: #2d1b4e;
+    --void-glow: #5a3d7a;
+    --frost: #4a6d8a;
+    --frost-bright: #6d9bc4;
+    --ok: #5a8a4a;
+    --warn: #c47840;
+  }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(74, 109, 138, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(45, 27, 78, 0.10) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── Header ── */
+  .session-header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .session-header::after {
+    content: '⛧';
+    display: block;
+    position: absolute;
+    bottom: -0.7em;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deep);
+    padding: 0 1rem;
+    color: var(--gold-dim);
+    font-size: 1.2rem;
+  }
+
+  .session-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .doc-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--frost-bright);
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 0 40px rgba(201, 168, 76, 0.15);
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 1.25rem;
+    max-width: 700px;
+    margin: 1.5rem auto 0;
+    text-align: left;
+    font-size: 0.9rem;
+  }
+
+  .meta-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: right;
+    padding-top: 0.25rem;
+  }
+
+  .meta-val { color: var(--text); }
+  .meta-val em { color: var(--text-dim); }
+  .meta-val strong { color: var(--text-bright); }
+
+  /* ── Section headings ── */
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--gold);
+    margin: 3rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--frost-bright);
+    margin: 1.25rem 0 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  p { margin: 0 0 0.85rem; }
+  strong { color: var(--text-bright); }
+  em { color: var(--text); font-style: italic; }
+
+  ul, ol {
+    padding-left: 1.5rem;
+    margin: 0 0 1rem;
+  }
+
+  li { margin-bottom: 0.4rem; }
+
+  /* ── Region context card (top callout) ── */
+  .region-context {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(74, 109, 138, 0.1) 100%);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--frost);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0 2.5rem;
+    font-size: 0.95rem;
+  }
+
+  .region-context strong { color: var(--frost-bright); }
+
+  /* ── Recap (DM) block ── */
+  .recap-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  /* ── Quotes ── */
+  blockquote, .quote {
+    border-left: 3px solid var(--gold-dim);
+    background: var(--bg-card);
+    padding: 0.85rem 1.25rem;
+    margin: 0.75rem 0 1rem;
+    font-style: italic;
+    color: var(--text-bright);
+  }
+
+  .quote-speaker {
+    display: block;
+    font-style: normal;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--gold-dim);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .shanty {
+    border-left: 3px solid var(--void-glow);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(45, 27, 78, 0.2) 100%);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--text-bright);
+    font-family: 'Crimson Text', Georgia, serif;
+  }
+
+  /* ── Tag chips ── */
+  .tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    margin: 0 0.25rem;
+    vertical-align: 2px;
+    white-space: nowrap;
+  }
+
+  .tag-player    { color: var(--ok);          border-color: var(--ok); }
+  .tag-le        { color: var(--frost-bright); border-color: var(--frost); }
+  .tag-ooc       { color: var(--gold-dim);    border-color: var(--gold-dim); }
+  .tag-dm        { color: var(--warn);        border-color: var(--warn); }
+
+  /* ── Combat round table ── */
+  .combat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .combat-table thead th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    background: rgba(45, 27, 78, 0.2);
+  }
+
+  .combat-table tbody td {
+    padding: 0.55rem 0.75rem;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.4);
+  }
+
+  .combat-table tbody tr:last-child td { border-bottom: none; }
+  .combat-table tbody tr:hover { background: rgba(42, 34, 53, 0.25); }
+  .combat-num { color: var(--gold-dim); font-weight: 600; text-align: center; width: 2.5rem; }
+  .combat-actor { color: var(--text-bright); font-weight: 600; white-space: nowrap; }
+
+  /* ── Two-column quotes ── */
+  .quotes-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  /* ── Decision callouts ── */
+  .decision-list, .open-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .decision-list li, .open-list li {
+    padding: 0.65rem 0 0.65rem 1.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.5);
+  }
+
+  .decision-list li:last-child,
+  .open-list li:last-child { border-bottom: none; }
+
+  .decision-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold-dim);
+    font-size: 0.6rem;
+    top: 0.95rem;
+  }
+
+  .open-list li::before {
+    content: '?';
+    position: absolute;
+    left: 0.15rem;
+    color: var(--frost-bright);
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    top: 0.7rem;
+    font-weight: 600;
+  }
+
+  /* ── House rule pills ── */
+  .pill-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pill-list li {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .pill-list strong { color: var(--text-bright); }
+
+  .pill-list .rule-tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    margin-right: 0.5rem;
+    vertical-align: 2px;
+  }
+
+  /* ── Voider Taint table ── */
+  .vt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0 1.5rem;
+    font-size: 0.95rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .vt-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: left;
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(45, 27, 78, 0.2);
+  }
+
+  .vt-table td {
+    padding: 0.65rem 0.9rem;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.4);
+  }
+
+  .vt-table tr:last-child td { border-bottom: none; }
+  .vt-pc { color: var(--text-bright); font-weight: 600; white-space: nowrap; }
+
+  /* ── NPC card grid ── */
+  .npc-grid {
+    display: grid;
+    gap: 0.85rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  .npc-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 0.85rem 1.1rem;
+  }
+
+  .npc-card-name {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-bright);
+    font-size: 1.05rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .npc-card-body {
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+
+  /* ── OOC note ── */
+  .ooc-note {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+
+  .ooc-note::before {
+    content: 'OOC';
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    margin-right: 0.5rem;
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    vertical-align: 1px;
+  }
+
+  /* ── Timestamps ── */
+  .ts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    background: rgba(42, 34, 53, 0.3);
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+    margin-left: 0.4rem;
+    vertical-align: 1px;
+  }
+
+  /* ── Table of contents ── */
+  .toc {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 2rem;
+    font-size: 0.9rem;
+  }
+
+  .toc-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .toc ol {
+    columns: 2;
+    column-gap: 1.5rem;
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--border-glow);
+  }
+
+  .toc a:hover {
+    color: var(--gold-bright);
+    border-bottom-color: var(--gold-dim);
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .container { padding: 1rem; }
+    h1 { font-size: 1.7rem; }
+    .meta-grid { grid-template-columns: 1fr; gap: 0.1rem 0; }
+    .meta-label { text-align: left; padding-top: 0.5rem; }
+    .toc ol { columns: 1; }
+    .combat-table, .vt-table { font-size: 0.82rem; }
+    .combat-table thead th:nth-child(3),
+    .combat-table tbody td:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="session-header">
+    <div class="session-number">Session III</div>
+    <div class="doc-label">Technical Summary</div>
+    <h1>The Hand of a Drowned God</h1>
+
+    <div class="meta-grid">
+      <div class="meta-label">Source</div>
+      <div class="meta-val">Audio transcript (speaker-labelled, Parley Meeting Notes), ~241 minutes</div>
+
+      <div class="meta-label">Present</div>
+      <div class="meta-val">Tim (Neko) · Adam (Elenor Wolff) · Michael (Lucien Varkoff) · Scott (Ashen Veil) · Reign (Bloomfather Vergrad) · Joel (Yorika)</div>
+
+      <div class="meta-label">Absent</div>
+      <div class="meta-val">None — full table</div>
+
+      <div class="meta-label">Real date</div>
+      <div class="meta-val"><strong>Wednesday 29 April 2026</strong> — mid-week scheduling slot. Confirmed by Tim: just scheduling; s04 will also fall on a Wednesday.</div>
+
+      <div class="meta-label">Duration</div>
+      <div class="meta-val">~4h 01m total (in-game session ends ~234:50; rest is level-up &amp; OOC chat)</div>
+
+      <div class="meta-label">In-game time</div>
+      <div class="meta-val">A single day, the morning after s02's long rest. Depart Ottahofn ~dawn (7–8am); return ~3pm; end at the inn that evening.</div>
+    </div>
+  </header>
+
+  <div class="region-context">
+    <strong>Region context.</strong> The party is currently in <strong>Ottahofn</strong>, in <strong>Jotungore</strong> — the domain of <strong>Atrum Rex, the Unburied King</strong>, whose seat is the <strong>Deathless Throne</strong> at Sorrowhold Bastion (per <code>campaign/lore/world.md</code> &amp; <code>gravelords.md</code>). Imar Marrowhands' shanty references the Deathless Throne directly, and Imar serves Atrum Rex — so the party did this hunt entirely <em>within</em> their own Gravelord's territory.
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#recap">Session recap (DM)</a></li>
+      <li><a href="#origins">Pre-session origin placement</a></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="#npcs">NPCs encountered</a></li>
+      <li><a href="#combat">Combat encounters</a></li>
+      <li><a href="#loot">Loot &amp; rewards</a></li>
+      <li><a href="#decisions">Decisions &amp; consequences</a></li>
+      <li><a href="#open">Open threads / unanswered questions</a></li>
+      <li><a href="#quotes">Quotes &amp; moments</a></li>
+      <li><a href="#rulings">DM rulings &amp; rule clarifications</a></li>
+      <li><a href="#tags">Tag legend</a></li>
+    </ol>
+  </div>
+
+  <h2 id="recap">Session recap (DM)</h2>
+  <p>Brett opened with a recap of s02 <span class="ts">~6:53–11:12</span>. Key facts re-established:</p>
+
+  <div class="recap-block">
+    <ul>
+      <li>The party returned from the s01 rift storm carrying Lucien and Elenor; met Brynja at the barracks; traded another storm mission for healing.</li>
+      <li>The church healer was specifically called out as <strong>the Sultan, named Keshen</strong> — local leader of the <strong>Order of the Ashen Rose</strong> chapter at Ottahofn. The Order ultimately serves Gravelord <strong>Saint Isdor</strong> in Gravenholme; Keshen is the local representative. The party avoided going there because Lucien and Elenor are undead.</li>
+      <li>Reign quipped in-recap "you find out that Vergrad could have healed us all along." <span class="ts">~7:50</span></li>
+      <li>The alley ambush with the goblin boss / minions / troll <strong>Galthor</strong> was recapped, including the party paying him off after killing the boss.</li>
+      <li>At The Rotting Boot Inn, Lucien met <strong>Julian Davros</strong>, who named two more Lilith-aligned contacts: <strong>Penelope Kresh</strong> (leatherworker with close access to high-ranking Rewritten) and <strong>Koal Dockhand</strong> (Eidolon orc on the Slaughter Ramp).</li>
+      <li>Lucien gave "quite the haunting and impressive performance" on stage; spoke briefly with <strong>Eirny</strong> at the bar.</li>
+      <li>The next day the party went to Koal, who pointed them toward <strong>Imar Marrowhands</strong> for the shark guts bounty.</li>
+    </ul>
+  </div>
+
+  <div class="ooc-note">
+    <strong>Spelling notes:</strong> Brett pronounced <strong>Penelope Kresh</strong> as "Kesh" in this recap; canonical spelling remains <strong>Kresh</strong> (s02 in-session usage and the DM's 2026-04-21 written corrections both used Kresh — a one-off verbal misspeak in a recap does not re-canonicalise the name). <strong>Sultan Keshen</strong> is genuinely new this session — s02 had him as "the Sultan / Order of the Ashen Rose" without a name.
+  </div>
+
+  <h2 id="origins">Pre-session origin placement <span class="ts">00:00–~05:30</span></h2>
+  <p>Above-table flavour decisions made before play started; recorded as DM/OOC context for character backstory work.</p>
+
+  <ul>
+    <li><strong>Vergrad</strong> — north area in the <strong>Harrowthorn / Blackthorn</strong> region, well within the forest, near a body of water suitable for a Phoerniksgrove. <em>Canonical going forward</em> per Tim's confirmation. <em>(Transcript variant: "Harrowthorne".)</em></li>
+    <li><strong>Ashen</strong> — somewhere near the <strong>Volcanary</strong> (volcanic) region.</li>
+    <li><strong>Lucien</strong> — somewhere around <strong>Kravenhelm</strong> in the darker region just south of it — on the edge of Lilith's own mountain domain. <em>(Transcript variants: "Cravenhelm" / "Cravenholm" — defaulting to canonical Kravenhelm per the world map.)</em> Narratively fits a Lilith-aligned Dhampir from her seat region.</li>
+    <li><strong>Yorika</strong> — Joel's player-coined home town <strong>Sleath</strong>, somewhere in the mountains within Jotungore. Brett accepted the name tongue-in-cheek with the "polar bears come from sleuths" joke; canonical per Tim's confirmation. <span class="ts">~02:30</span></li>
+    <li><strong>Neko</strong> — woke up somewhere near Ottahofn; placement deferred ("there's someone who would know and you can ask them" — Brett).</li>
+  </ul>
+
+  <div class="ooc-note">
+    A long crude tangent about "huge clitoris" weapon proficiency for Yorika's sheet <span class="ts">~02:56–06:40</span> is <strong>not in-game canon</strong> despite Brett's "that's canon" line — it was banter; the proficiency was not actually written down. Joel's actual sheet is unaffected.
+  </div>
+
+  <h2 id="events">Events</h2>
+
+  <h3>Imar Marrowhands at the Slaughter Ramp <span class="ts">~11:00–25:00</span></h3>
+  <p>Picking up where s02 ended, the party was on the Slaughter Ramp / dock area. Vergrad showed off a new piece of his work — he'd taken a chair from the inn and <strong>woodcarved it into a quarterstaff</strong> with new roots, one leg deliberately too long so the stub legs wobble. He explained his craft as the inverse of woodworking: rather than removing material to find a shape, he draws shape <em>out</em> of wood by remoulding the grain. <span class="ts">~11:34–12:30</span></p>
+
+  <p>The party walked the Slaughter Ramp / Flesh Pillar Bay docks looking for Imar. They were directed toward a Rewritten <strong>Dockmaster</strong> — balding, spectacled, late 40s, <strong>grafted</strong> (one elvish ear, one normal), carrying a ledger and flanked by three guards. After a snubbing first attempt by Lucien ("did that mean anything to me, boy?"), <strong>Elenor tossed a coin onto his ledger</strong> <span class="ts">~19:56</span>, and the Dockmaster pointed them to <strong>the Fourth Birthing</strong>, telling them they'd hear "some sort of jolly fucking tune."</p>
+
+  <p>On approach, Imar was singing a sea shanty:</p>
+
+  <div class="shanty">
+    Sloops in the harbour, souls lost at sea / Way ho, dark seas roam on / The crew in the tavern drowns with me / When the frost lights sing our song / Short on the voyage, minds all gone / Welcome, lost souls, the void sends anew / All the malice known only to few / We sail for terror, risen tyrant sea / When the debt collects, we break the king free / So shoot up your sirach and drink down your ale / Way ho, dark seas roam forever on / She'll steal your marrow, hands to the rail / Way ho to the deathless throne. <span class="ts">~21:30–22:43</span>
+  </div>
+
+  <h4>Lucien's history check on the song <span class="ts">~25:00–28:05</span></h4>
+  <p>Brett gave Lucien the following confirmed information from the lyrics:</p>
+  <ul>
+    <li>"Frost lights sing our songs" / "minds all gone" — references the <strong>Sea of Souls</strong> and how its lights lure people; time spent out there steals memory; the dead are "as good as dead" once the void's taken them. <span class="tag tag-player">Player-known</span></li>
+    <li><strong>Void Taint is unshakable</strong> — leaving any large dwelling settlement for any extended period is a continuous problem. People congregated into towns because that's the only way they found to abate it. <span class="tag tag-player">Player-known</span></li>
+    <li>"We sail for terror, risen tyrant sea" — <em>risen tyrant</em> is a historical moniker for <strong>Atrum Rex</strong>. The song is a shanty paying respect; Imar is well aware whose ocean he sails. <span class="tag tag-player">Player-known</span></li>
+    <li>Neko got a separate (disadvantaged) history check; Brett gave him only general "you're a bit removed" flavour.</li>
+  </ul>
+
+  <h4>Imar's appearance <span class="ts">~23:58</span></h4>
+  <p>Skeletal face, mostly missing flesh, but wears very unusual fisherman's clothes — almost noble-adjacent, with a full button-down short-cropped coat (no tails, no long jacket), and a quirky hat. The whole getup feels uniform-like but unfamiliar to anyone in the party — <strong>doesn't match any known faction or house</strong>. (Adam's investigation/history check during the trip confirmed this.)</p>
+
+  <h4>Imar's pronunciation <span class="ts">~58:46–59:33</span></h4>
+  <p>The name is written <strong>I-M-A-R</strong> but pronounced <strong>"Ivar"</strong> — Brett is firm on this. It's an Irish-style spelling. Imar has stopped correcting people; treat both as equivalent in transcripts, but his name is "Ivar."</p>
+
+  <h3>Boarding and contract negotiation <span class="ts">~25:00–40:00</span></h3>
+  <p>Imar's vessel: a single-mast sloop with <strong>two skeletal crew members</strong> — and per Imar's later admission, he hand-fights ("rassles") shark guts solo. He claimed <strong>at least 13</strong> previous successful runs.</p>
+
+  <p><strong>The deal struck:</strong></p>
+  <ul>
+    <li>Pay: <strong>20 gold</strong> (Lucien rolled persuasion + deception with advantage at 19; Imar's smile insight check confirmed he accepted).</li>
+    <li>Return condition: Imar will bring everyone back, <strong>alive or dead</strong> — "that's not my job whether you're alive or not. But I will bring you all back." <span class="ts">~38:06</span></li>
+    <li>Vergrad asked about advance pay; Yorika cut him off: "You can't keep taking payment up front and not doing the job. This is how you got into this mess in the first place." <span class="tag tag-player">Player-known</span></li>
+    <li>Insight on Imar: <strong>100% truth in everything so far.</strong> <span class="tag tag-dm">DM ruling</span></li>
+  </ul>
+
+  <p>Imar admitted the <strong>boat is "borrowed"</strong> <span class="ts">~119:42</span> — Yorika asked if the owner knew; Imar deflected ("would it make you feel better if I say yes?"). She eventually shrugged: as long as he pays and the job's done, she has no interest in reporting him.</p>
+
+  <div class="quote">
+    <span class="quote-speaker">Imar to Ashen (after he mentioned he can't swim) — <span class="ts">~31:22</span></span>
+    "Don't worry. I'll just be sure if you do fall in, I'll keep the boat rolling. No one will ever, ever know you went missing."
+  </div>
+
+  <h3>The journey out and the hand of a drowned god <span class="ts">~40:00–~103:00</span></h3>
+
+  <p>Sailing through <strong>Flesh Pillar Bay</strong> toward the hunting grounds — fluid souls-mixed water (always purple/blue, with hollow shadowy faces visible if you stare into it; freezes on the surface, requiring the sloop's metal-forged ramming point to break thinner ice shelves). Imar mentioned the shark guts hunting grounds are <em>receding outward over time</em>. <span class="ts">~43:20</span></p>
+
+  <p>About 56 minutes in <span class="ts">~55:57</span>, the ice shelves rocked the sloop and <strong>a colossal hand emerged from the ice ~300 ft away</strong> — clear ice, frosty ice, and rock; a soft pulsing white light emanating in waves. Only emerged to about the wrist; what's below is unknown but "fucking massive."</p>
+
+  <h4>Initial party reactions</h4>
+  <ul>
+    <li>Imar reflexively turned the sloop 45° away from the hand.</li>
+    <li>Imar gave <strong>Bardic Inspiration</strong> (D8) to Yorika, then Neko, Vergrad. (Imar is a bardcaster — Spell Save DC and Cha mod <strong>+5</strong>.) The inspiration carries <strong>two-mode rules</strong>: standard add-to-attack/check (with optional Wis-save frighten rider) OR damage-reduction reaction (die + Cha mod). <span class="tag tag-dm">DM ruling</span></li>
+    <li>Imar fired a flintlock at the hand at extreme range; missed, then failed his own save and got addled. The boat started turning <em>back</em> toward the hand as he charmed-steered it.</li>
+  </ul>
+
+  <h4>The light's effect</h4>
+  <ul>
+    <li><strong>Round 1:</strong> 1 damage on failed save, paralysis-condition / charm-effective. Vergrad failed his Con save first.</li>
+    <li><strong>Round 2+:</strong> <strong>8 psychic damage</strong> to anyone who could see the light and failed the Con save. Vergrad, Elenor, and Lucien all failed and took 8 each. Yorika was charmed (immune as charmed creature). Ashen was blindfolded and immune.</li>
+    <li>The hand moved ~70 ft per round, breaking through ice toward the boat.</li>
+  </ul>
+
+  <h4>Solutions the party came up with (Brett explicitly praised this)</h4>
+  <ul>
+    <li><strong>Lucien</strong> — at the wheel, broke the strength contest to keep the boat turning away. Then covered his eyes. <span class="ts">~89:30</span></li>
+    <li><strong>Ashen</strong> — pulled the strip from his robe, tied it as a blindfold, took the dodge action — verified immune to the light effect. <span class="ts">~81:36</span></li>
+    <li><strong>Yorika</strong> — copied Ashen, ripped a strip from her cloak as a blindfold.</li>
+    <li><strong>Vergrad</strong> — when charmed, druidcrafted into the deck wood to grab the rudder mentally; his charm twisted the ship the <em>wrong</em> way, but he <strong>broke the rudder</strong> in the process. Boat ended with a slight permanent list right; Imar later quietly fixed it.</li>
+    <li><strong>Neko</strong> — assisted at the helm; later cleverly <strong>smeared his clear-glass canister with hydraulic fluid from his earlier blood-pact wound</strong> so he couldn't see the light through it. Brett loved this. <span class="ts">~95:00</span></li>
+    <li><strong>Elenor</strong> — first in-play use of her <strong>batkin form</strong>. Per Adam: Elenor mechanically <em>is</em> a Batkin, but normally appears as a beautiful human-passing woman and blends into society; she can switch form to access her racial traits. Used <strong>Echolocation</strong> (30 ft blindsight, assumed Nightwing subrace) to navigate blindfolded; flew up to a sail and beat her wings to give the sloop an extra half-movement boost. Cast <strong>Bleak Flame</strong> on herself for theatrical healing as she returned to human-passing form. (Origin feat — <strong>Hunter of Hunters / Dead Aim</strong>: ignores resistances on hit.)</li>
+  </ul>
+
+  <p>Eventually the boat moved 250 ft away. The hand sank back beneath the ice, lights winking out finger by finger. <span class="ts">~102:35</span></p>
+
+  <div class="quote">
+    <span class="quote-speaker">Imar's reveal post-encounter — <span class="ts">~104:43</span></span>
+    "That, I believe, is the hand of a drowned god. It's not the first I've come across, but I hope it's the last." <span class="tag tag-player">Player-known</span>
+  </div>
+
+  <div class="ooc-note">
+    <strong>Potential story thread (not fact):</strong> Established lore documents at least one "drowned" entity — <strong>The Drowned King</strong>, listed in <code>death_rules.md</code> as Pact Entity #8 ("once a god of dominion, now sunken and broken beneath the Sea of Souls"). The hand description thematically aligns, but neither Imar nor any current lore source confirms the relationship. Track as open thread.
+  </div>
+
+  <h3>Imar's life advice <span class="ts">~106:50–~123:00</span></h3>
+
+  <ul>
+    <li><strong>Imar to Elenor (recognising she's Batkin):</strong> "If you get strong enough, you get tolerated. It's only while you're weak that they treat you like you're a leper or try to kill you." <span class="tag tag-player">Player-known</span></li>
+    <li><strong>Imar's uniform investigation</strong> (Adam's roll): "Definitely not a familiar uniform. Doesn't feel to have been part of anyone's faction or house." <span class="tag tag-player">Player-known</span></li>
+    <li><strong>Shark guts mechanics revealed:</strong> The shark itself is dead — <strong>a parasite controls the body via tentacles</strong>. Hitting the body does no damage; <strong>you have to hit the tentacles</strong>. Recognised retroactively: there was one of these on the slaughter ramp when the party first arrived (s01). <span class="tag tag-player">Player-known</span></li>
+  </ul>
+
+  <div class="quote">
+    <span class="quote-speaker">Brett through Imar to Yorika (insight check) — <span class="ts">~121:00</span></span>
+    "You all seem like you're trying to live in a world that's a little different than the one you do. It might be time to start adopting new ways of life. … Asking about where things come from or worrying about shit like this when your life's on the line. That's the stuff that'll get you killed. You gotta keep your eyes on the prize."
+  </div>
+
+  <h3>The downtime craft window <span class="ts">~123:00–~135:00</span></h3>
+  <ul>
+    <li><strong>Vergrad</strong> crafted <strong>2 wooden stakes</strong> for Lucien (free; ~30 min for two; woodcarver's craftable list = club, greatclub, quarterstaff, ranged weapons except pistol/musket/sling).</li>
+    <li><strong>Yorika</strong> tried to barb a weighted net with caltrops — rolled a flat D20 with no proficiency. <strong>Critically failed; the net is destroyed.</strong> Imar saw it and waved it off — all forgiven.</li>
+    <li><strong>Lucien</strong> took a short rest (he was hurt). Yorika napped.</li>
+    <li><strong>Tool proficiency offer</strong> from Brett: Joel and Adam may revisit their backgrounds for tool proficiencies. Nothing committed in-session. <span class="tag tag-dm">DM ruling</span></li>
+  </ul>
+
+  <h4>Void Taint check after short rest <span class="ts">~135:38</span></h4>
+  <p>Charisma save DC 12 — exposure from being on the open ocean far from civilisation.</p>
+
+  <table class="vt-table">
+    <thead>
+      <tr><th>PC</th><th>Result</th><th>New level &amp; effects</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="vt-pc">Lucien</td>
+        <td>Rolled 10 → fail</td>
+        <td><strong>Gained 1 (now Level 1).</strong> Effects: constant unintelligible whispers; disadvantage on Wis Perception checks and Wis saving throws.</td>
+      </tr>
+      <tr>
+        <td class="vt-pc">Yorika</td>
+        <td>Failed save</td>
+        <td><strong>Escalated to Level 2.</strong> Effects (cumulative): Level 1 (whispers, Wis disadv) + Level 2 (eyes turn black, 60 ft darkvision, <strong>blinded in bright light</strong>).</td>
+      </tr>
+      <tr>
+        <td class="vt-pc">Neko</td>
+        <td>Used Bardic die → pass</td>
+        <td>No Void Taint gained. Brett allowed retroactive Bardic spend.</td>
+      </tr>
+      <tr>
+        <td class="vt-pc">Vergrad / Elenor / Ashen</td>
+        <td>Passed</td>
+        <td>No change.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>The shark guts hunt <span class="ts">~140:00–~196:30</span></h3>
+  <p>The crew spotted a shark guts in clearer waters near big overhead ice structures. Initiative rolled.</p>
+
+  <table class="combat-table">
+    <thead>
+      <tr><th>#</th><th>Actor</th><th>Action</th><th>Result</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="combat-num">1</td><td class="combat-actor">Vergrad</td><td>Light crossbow → <strong>crit</strong> (14 hit, 14 dmg)</td><td>Lodged in flesh; gurgling cry from inside the body</td></tr>
+      <tr><td class="combat-num">2</td><td class="combat-actor">Imar</td><td>Threw a gunpowder satchel within 30 ft; tossed his flintlock pistol to Ashen</td><td>"The shot's yours!"</td></tr>
+      <tr><td class="combat-num">3</td><td class="combat-actor">Ashen</td><td>Took the shot (proficient, ranged) — DC 18 Dex save by shark guts</td><td>Failed; 13 dmg (3d6). Body erupted, <strong>parasite exposed</strong>; AC reduced</td></tr>
+      <tr><td class="combat-num">4</td><td class="combat-actor">Elenor</td><td>Cast <strong>Grasp of the Grave</strong> (20-ft sq AoE) → Dex 14 fail</td><td>Restrained; used <strong>Hunter of Hunters / Dead Aim</strong> to ignore resistances</td></tr>
+      <tr><td class="combat-num">5</td><td class="combat-actor">Shark Guts</td><td>Tendril lash → grappled Ashen → reeled him into the void-water</td><td>Ashen grappled + restrained, in the void-water</td></tr>
+      <tr><td class="combat-num">6</td><td class="combat-actor">Elenor</td><td>Dropped concentration on Grasp → freed Ashen from restraint; crit Eldritch Blast</td><td><strong>Damage Transfer</strong> revealed: 4/4 split. Ashen took 4 dmg.</td></tr>
+      <tr><td class="combat-num">7</td><td class="combat-actor">Lucien</td><td>Cast Sleep-effect spell — Wis save fail</td><td>Shark guts <strong>incapacitated</strong> (grapple holds)</td></tr>
+      <tr><td class="combat-num">8</td><td class="combat-actor">Neko</td><td>Jumped from rail (Str-jump 9 ft horizontal) → contested Str 21 vs 15</td><td><strong>Broke the grapple.</strong> Pulled Ashen ~5 ft clear</td></tr>
+      <tr><td class="combat-num">9</td><td class="combat-actor">Imar</td><td>Bardic to Ashen again; dove off the boat with cutlass</td><td>7 slashing damage</td></tr>
+      <tr><td class="combat-num">10</td><td class="combat-actor">Ashen</td><td>Longsword strike (Brett waived underwater disadv — they were on the surface); 22 to hit + Sap mastery</td><td>Disadv on shark guts' next attack; Brett: "near death"</td></tr>
+      <tr><td class="combat-num">11</td><td class="combat-actor">Yorika</td><td>Blinded; threw a spear at disadvantage</td><td>Missed; came one off hitting an ally</td></tr>
+      <tr><td class="combat-num">12</td><td class="combat-actor">Vergrad</td><td><strong>Starry Wisp</strong> ("Bloom Burst" on his sheet) — 25 to hit crit</td><td>3 dmg</td></tr>
+      <tr><td class="combat-num">13</td><td class="combat-actor">Shark Guts</td><td>Incapacitated; tried to dive — provoked 3 opportunity attacks</td><td>Ashen "punched through the heart." <strong>Killed.</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Outcomes:</strong> Shark guts killed. Most of the dead host-body was destroyed by the gunpowder satchel; only the internal parasite portion remained intact. Ashen took 4 damage from Elenor's Eldritch Blast (Damage Transfer) but otherwise unharmed; he tread water fine despite saying he can't swim. The kill was hauled aboard via the sloop's net-arms.</p>
+
+  <h3>Return to Ottahofn and Imar's secret offer <span class="ts">~196:30–~213:30</span></h3>
+
+  <p>Boat returned to Ottahofn harbour ~3pm. Same-day round trip.</p>
+
+  <ul>
+    <li><strong>Imar stole the flintlock pistol back from Ashen</strong> during the post-kill banter — Ashen rolled perception, missed it; only noticed Imar holstering. "He just took it back. I'll forgive you for the spears, you've all seemed to co-opt." <span class="ts">~200:25</span></li>
+    <li><strong>Imar paid the full 20 gp</strong> (counted, all there). Confirmed as the full take.</li>
+    <li><strong>Imar's secret offer</strong> — pulled Vergrad in close: in exchange for <strong>information on what the Rewritten are doing with the charges</strong>, where they're shipping them, ideally a charge or two themselves, "the bag gets heavier every time." Drinks "on the morrow" at the inn is the next checkpoint. <span class="tag tag-player">Player-known</span></li>
+    <li>Vergrad chose <strong>not</strong> to pay any of the 20 gp toward his debt. <strong>Debt remains 35 gp.</strong></li>
+  </ul>
+
+  <h4>Elenor's whisper to Lucien on the trip back <span class="ts">~204:13</span></h4>
+  <p>Pulling Lucien aside privately, Elenor pitched the rest of the party as recruitment material:</p>
+  <ul>
+    <li><strong>Vergrad (the tree)</strong> and <strong>Neko (the necro)</strong> "could be useful for our mission" — both can be guided/persuaded.</li>
+    <li><strong>Ashen (the shade)</strong> and <strong>Yorika (the Arcturi)</strong> "have a bit of cunning about them. We're going to have to be careful."</li>
+    <li>Lucien: "I'm certain that you can be persuasive when you want to be. Honey over vinegar, though, dear." <span class="tag tag-le">L&amp;E only</span></li>
+  </ul>
+
+  <h3>Back at The Rotting Boot Inn <span class="ts">~213:30–~235:00</span></h3>
+
+  <p>The party returned to the inn. Lucien's room was still paid up for 3 nights from s02.</p>
+
+  <h4>Procurements via Julian Davros</h4>
+  <p>Julian had used the time to pick up gear for the party — costs covered by Lucien's existing arrangement:</p>
+  <ul>
+    <li>A few bags, bedrolls, pitons, a few torches.</li>
+    <li><strong>Two thick fur-lined long coats / dusters</strong> — wearer gets <strong>advantage on saves vs cold-weather effects</strong>.</li>
+    <li><strong>Ashen and Lucien each took a fur coat.</strong></li>
+  </ul>
+
+  <h4>Lucien's note to Relert Bucephelous</h4>
+  <p>Lucien handed Julian another sealed note for his handler. Contents (Brett asked, Lucien volunteered):</p>
+  <div class="quote">
+    "Julian's been valuable but Cole seems to have forgotten his place and may require a lesson."
+  </div>
+
+  <h4>Julian's tip-off <span class="ts">~222:54</span></h4>
+  <div class="quote">
+    <span class="quote-speaker">Julian to Lucien &amp; Elenor — <span class="tag tag-le">L&amp;E only</span></span>
+    "I don't see him often, but the Sultan, he's where you are in town. Someone tipped him off. Not you specifically, but he has become aware of two vampires in town. … It probably won't take him long to figure out who's new."
+  </div>
+
+  <h4>Private back-room conversation <span class="ts">~224:24</span></h4>
+  <p>Party retreated to a private side-room with a fireplace. Ashen briefed the rest on Imar's offer: report on the Rewritten, get him a couple of charges, "the bag gets heavier." Drinks tomorrow.</p>
+
+  <p>One beat: <strong>Elenor fed on a chained-up willing prisoner upstairs</strong>; Brett noted Lucien joined briefly — same person ("just a quick snack" / "saving our food"). The prisoner is "into this shit" per Brett's defence; implies an established arrangement at the inn.</p>
+
+  <h4>The Fionrir reveal <span class="ts">~228:33</span></h4>
+  <div class="ooc-note">
+    <strong>This whole section is <span class="tag tag-le">L&amp;E only</span> in-character; <span class="tag tag-ooc">OOC</span> for the rest of the party.</strong>
+  </div>
+
+  <ul>
+    <li>Imar's lyric "we break the king free" + "deathless throne" / "risen tyrant sea" connect Imar to <strong>Atrum Rex</strong> ("the Unburied King"). Aligns with established lore — Atrum Rex's seat is the <strong>Deathless Throne / Sorrowhold Bastion</strong> in Jotungore.</li>
+    <li>The Rewritten and Atrum Rex's faction are <strong>distinctly two separate factions</strong>. The Rewritten are not Gravelord-backed — they're operating in Atrum Rex's own domain without his support.</li>
+    <li>The <strong>Undying Accord</strong> has existed for ~80 years (written early 3900s YPE). It says no faction may move openly against another. This is why non-Gravelord-supported factions cannot openly attack Gravelord-aligned ones, and vice versa — open conflict would cause political turmoil. <strong>This is why Imar can openly recruit on the docks.</strong></li>
+    <li>Brett, above-table: "Eleanor specifically [was] sent here because <strong>Fionrir has gained power that is rivaling what they don't want her to have</strong>. It is too far beyond their levels, and they're like, that needs to be found out, monitored, and watched."</li>
+    <li><strong>Gravelords are not created — they earn their power over time.</strong> Fionrir could be a potential usurper.</li>
+  </ul>
+
+  <div class="ooc-note">
+    <strong>Spelling/term notes:</strong> Brett spoke "Fjornrir" repeatedly in this scene; canonical name is <strong>Fionrir Starsundr</strong>. Brett used "Undying Court" once; canonical term is <strong>Undying Accord</strong> — treat the transcript's "Court" as a verbal misspeak.
+  </div>
+
+  <h3>End of session / level up <span class="ts">~234:50–~241:11</span></h3>
+  <p>Brett asked everyone to <strong>prepare level 2</strong> for next session — the actual level-up will happen <em>during</em> the next session at an in-fiction appropriate moment.</p>
+  <ul>
+    <li><strong>Ashen</strong> — continuing <strong>Pugilist</strong> Fighter at L2.</li>
+    <li><strong>Lucien</strong> — Bard Expertise + Jack of all Trades.</li>
+    <li><strong>Yorika</strong> — Tactical Mind.</li>
+    <li><strong>Elenor</strong> — undecided.</li>
+    <li><strong>Vergrad / Neko</strong> — not stated this session.</li>
+  </ul>
+
+  <p>Brett: three sessions at level 1 felt like enough; he wants the party to get to level 3 (subclass unlock) without too much more delay, then slow back down. He also gave the encouragement speech mid-combat about thinking outside the rules-as-written box.</p>
+
+  <h2 id="npcs">NPCs encountered</h2>
+
+  <div class="npc-grid">
+    <div class="npc-card">
+      <div class="npc-card-name">Imar Marrowhands ("Ivar")</div>
+      <div class="npc-card-body">Captain (begrudgingly) of his own borrowed sloop; bardcaster (D8 inspiration, Cha +5); skeletal except for what flesh remains "in other places still"; wears unfamiliar non-faction noble-adjacent clothing; sails and serves Atrum Rex; has fought a hand of a drowned god before; carries flintlock pistol, cutlass, violin, gunpowder satchels; offers the party an ongoing secret-spy contract against the Rewritten. Disposition: ally-shaped, cynical, won't lie but won't tell them everything either. Possible <strong>College of the Macabre</strong> bard (closest structural match in <code>rules/subclasses/</code> for his two-mode Bardic Inspiration; unconfirmed).</div>
+    </div>
+    <div class="npc-card">
+      <div class="npc-card-name">Imar's two skeletal crew</div>
+      <div class="npc-card-body">Unnamed; sailed the boat, did nothing in either combat. Imar admits he "lets the lads sail the boat" and rassles shark guts solo.</div>
+    </div>
+    <div class="npc-card">
+      <div class="npc-card-name">The Dockmaster (Rewritten)</div>
+      <div class="npc-card-body">Unnamed in transcript; spectacled, balding, late 40s, grafted (one elvish ear, one normal); ledger-bearer with three guards. Disposition: businesslike, dismissive of unproven adventurers but accepts coin gracefully.</div>
+    </div>
+    <div class="npc-card">
+      <div class="npc-card-name">Sultan Keshen</div>
+      <div class="npc-card-body">Local leader of the <strong>Order of the Ashen Rose</strong> chapter at the Ottahofn church. (The Order ultimately serves Gravelord <strong>Saint Isdor</strong>; Keshen is the local rep.) Named here for the first time at the table. Per Julian: aware of "two vampires in town"; tip not yet specific to Lucien/Elenor.</div>
+    </div>
+    <div class="npc-card">
+      <div class="npc-card-name">Penelope Kresh</div>
+      <div class="npc-card-body">Leatherworker; Lilith familiar; close access to Rewritten via tailoring services. Brett verbally rendered "Kesh" in s03 recap; treat as a transcription/recap misspeak — canonical spelling remains <strong>Kresh</strong>.</div>
+    </div>
+    <div class="npc-card">
+      <div class="npc-card-name">Julian Davros</div>
+      <div class="npc-card-body">Mothkin barkeep, Lilith's spy. Procured gear for the party (gear sack + fur coats — covered by Lucien's existing arrangement); passed Lucien's note to Relert Bucephelous; gave the Sultan tip-off.</div>
+    </div>
+    <div class="npc-card">
+      <div class="npc-card-name">A chained, willing prisoner</div>
+      <div class="npc-card-body">Upstairs at The Rotting Boot Inn — used by Elenor (and briefly Lucien) for feeding. Brett: "they're into this shit." Implies an ongoing arrangement at the inn.</div>
+    </div>
+  </div>
+
+  <h2 id="combat">Combat encounters</h2>
+
+  <h3>Hand of a drowned god — survived, not killed</h3>
+  <p>Broke off after ~7 rounds when the boat got 250 ft away. Damage taken: ~9 psychic to Vergrad, 8 to Elenor, 8 to Lucien (some absorbed by Vergrad's Thorn Armor temp HP). Resources spent: Vergrad's Thorn Armor (10 temp HP), Imar's Bardic Inspiration (multiple uses), spells (Druidcraft on rudder, Echolocation/batkin form for Elenor, Bleak Flame for self-heal), creative use of blindfolds and clear-glass canister tricks.</p>
+
+  <h3>Shark guts — killed</h3>
+  <p>Mechanic learned: parasite inside dead body; body provides cover (+2 AC) until destroyed; shark guts has <strong>Damage Transfer</strong> while grappling. Tactics that worked: gunpowder satchel + ranged shot to expose parasite, area restraint, drop concentration to free grappled ally, Sleep-effect spell to incapacitate, brute strength check to break grapple.</p>
+
+  <h2 id="loot">Loot &amp; rewards</h2>
+  <ul>
+    <li><strong>Imar's payment: 20 gp</strong> — confirmed full take. Held by Vergrad in-fiction. Per-PC distribution TBC.</li>
+    <li><strong>Wooden stakes ×2</strong> — Vergrad-crafted; given to Lucien; vampire-staking utility.</li>
+    <li><strong>Fur-lined long coat</strong> — to Ashen (advantage on cold-weather saves).</li>
+    <li><strong>Fur-lined long coat</strong> — to Lucien (advantage on cold-weather saves).</li>
+    <li><strong>Bag of adventuring gear</strong> procured by Julian — bedrolls, pitons, torches, bags. Covered by Lucien's existing arrangement.</li>
+    <li><strong>Harpoons ×2</strong> co-opted from Imar's sloop. Statted as spears (20/60 ft), barbed-headed. Imar shrugged it off.</li>
+    <li><strong>Net</strong> — Yorika's caltrop-barbing experiment destroyed it. Imar shrugged it off.</li>
+    <li><strong>Flintlock pistol</strong> — briefly Ashen's; Imar pickpocketed it back (passive perception 7).</li>
+    <li><strong>XP / milestones:</strong> All players prepare level 2 for s04; level-up happens in-fiction.</li>
+  </ul>
+
+  <h2 id="decisions">Decisions &amp; consequences</h2>
+  <ul class="decision-list">
+    <li>Party tacitly agreed to <strong>Imar's spy-on-the-Rewritten side contract</strong> — drinks tomorrow is next checkpoint.</li>
+    <li><strong>Lucien deliberately set up Koal Dockhand for retaliation</strong> by his handler ("Cole seems to have forgotten his place"). <span class="tag tag-le">Lucien only</span></li>
+    <li><strong>Vergrad chose not to apply payment to his Rewritten debt</strong> this session — a conscious deferral. Debt remains 35 gp.</li>
+    <li>Elenor (briefly Lucien too) fed on a chained, willing prisoner upstairs — implies an established arrangement at the inn.</li>
+    <li>Yorika's net got destroyed in a botched craft attempt — small but permanent loss; Imar forgave it.</li>
+    <li><strong>Yorika's Void Taint escalated to level 2.</strong> She's now blinded in bright light. Major mechanical impact going forward.</li>
+    <li><strong>Lucien picked up his first level of Void Taint.</strong> Level 1 effects only: whispers + Wis disadvantage.</li>
+  </ul>
+
+  <h2 id="open">Open threads / unanswered questions</h2>
+  <ul class="open-list">
+    <li>What is below the wrist of the hand of a drowned god? Imar doesn't know.</li>
+    <li>Potential story thread — is the "hand of a drowned god" connected to <strong>The Drowned King</strong>? (Pact entity in <code>death_rules.md</code>.) Thematic fit; not asserted as fact.</li>
+    <li>Why is Imar specifically out here in Ottahofn (Atrum Rex's own domain)? Non-factional uniform, no explained presence.</li>
+    <li><strong>Drinks with Imar tomorrow</strong> — venue likely The Rotting Boot Inn.</li>
+    <li>Sultan Keshen knows about two vampires in Ottahofn. <strong>When does he move on Lucien/Elenor?</strong></li>
+    <li>Lucien's Koal-"needing-a-lesson" note — what response does Relert give? Does Koal end up dead?</li>
+    <li>Who's holding the 20 gp? Vergrad took it physically; no formal split discussed.</li>
+    <li>s02 carry-over: troll-toll (5 cp) and Cole tip (~1 sp) — still unresolved who paid.</li>
+    <li>Did anyone formally accept Imar's spy offer? Drinks tomorrow is next checkpoint.</li>
+    <li>The boat is "borrowed" — whose is it? Will the owner come back?</li>
+    <li>Brynja-promised second rift-storm mission — still pending; relationship status unknown.</li>
+    <li>Imar's two-mode Bardic Inspiration — almost certainly tied to a bard subclass. Closest structural match is <strong>College of the Macabre</strong>. Lucien (College of Requiems) doesn't get the frighten rider.</li>
+  </ul>
+
+  <h2 id="quotes">Quotes &amp; moments worth remembering</h2>
+
+  <div class="quotes-grid">
+    <div class="quote">
+      <span class="quote-speaker">Imar to Ashen, on swimming</span>
+      "Don't worry. I'll just be sure if you do fall in, I'll keep the boat rolling. No one will ever, ever know you went missing."
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Brett through Imar to the table, on adventuring</span>
+      "You all seem like you're trying to live in a world that's a little different than the one you do. It might be time to start adopting new ways of life. … You gotta keep your eyes on the prize."
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Brett through Imar to Elenor, on being Batkin</span>
+      "If you get strong enough, you get tolerated. It's only while you're weak that they treat you like you're a leper or try to kill you."
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Imar revealing he stole his pistol back</span>
+      "He didn't rob you. He just took it back. The only time you noticed was when he was putting it back in the holster."
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Yorika to Vergrad, after he asked for advance pay</span>
+      "You can't keep taking payment up front and not doing the job. This is how you got into this mess in the first place."
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Neko's hydraulic-fluid trick (Brett's reaction)</span>
+      "Good thinking."
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Ashen, after the party fishes him out of the void-water</span>
+      "You may have had, you know, when you meet someone and they say that they do not like anal." <em>(Brett: "It's like an anomaly.")</em>
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Ashen on choosing not to fight the hand</span>
+      "One of us is going to have to choose violence, so I'll take that role." — became thematic for combat going forward.
+    </div>
+    <div class="quote">
+      <span class="quote-speaker">Imar's parting offer (the spy contract)</span>
+      "What say we pretend I don't know the crew you came here pretty new. And that you already have a little bit of an in with those rewritten. Let's say I know. That I'd like to know what they're doing with those charges."
+    </div>
+  </div>
+
+  <h2 id="rulings">DM rulings &amp; rule clarifications</h2>
+
+  <ul class="pill-list">
+    <li><span class="rule-tag">House Rule</span> <strong>Nat 20 on skill checks = critical success</strong> — regardless of bonuses or DC. <em>Formalised this session.</em> <span class="ts">~133:17</span></li>
+    <li><span class="rule-tag">2014 → 2024</span> <strong>Underwater attack disadvantage does NOT apply on the surface.</strong> Only fully submerged combat triggers the penalty. <span class="ts">~187:42</span></li>
+    <li><span class="rule-tag">2024 RAW</span> <strong>Swim without swim speed = half movement.</strong> No ability check needed for routine swimming.</li>
+    <li><span class="rule-tag">2024 RAW</span> <strong>Standing leap = Str score / 2 ft horizontal.</strong> Running 10+ ft beforehand = full-Str. Free action object interaction can include drawing/stowing during attacks.</li>
+    <li><span class="rule-tag">NPC Ability</span> <strong>Two-mode Bardic Inspiration (Imar-style):</strong> recipient chooses (a) standard add-to-attack/check with optional Wis-save frighten rider, OR (b) damage-reduction reaction (die + caster's Cha mod). The frighten rider may be specific to Imar's subclass — likely College of the Macabre. <span class="ts">~62:00</span></li>
+    <li><span class="rule-tag">Creature Ability</span> <strong>Damage Transfer:</strong> while a creature with this is grappling a victim, damage to the grappler splits 50/50. (Shark guts.) <span class="ts">~177:00</span></li>
+    <li><span class="rule-tag">House Rule</span> <strong>Cold-weather long coats grant advantage on cold-weather saves</strong> (not resistance). <span class="ts">~240:13</span></li>
+    <li><span class="rule-tag">House Rule</span> <strong>Snuggling in Yorika's bosom = advantage on cold-weather saves</strong> (one occupant at a time). Established s01, reaffirmed s03. <span class="ts">~240:30</span></li>
+    <li><span class="rule-tag">DM Clarification</span> <strong>Imar's "harpoons" are spears</strong> (20/60 ft), not javelins. Barbed for boat-side hits.</li>
+    <li><span class="rule-tag">DM Ruling</span> <strong>Think outside the rules box.</strong> Brett mid-combat asked the party to use environment / blindfolds / wheel / ropes rather than just rolling to hit. Sets the tone going forward.</li>
+  </ul>
+
+  <h2 id="tags">Tag legend</h2>
+  <p>
+    <span class="tag tag-player">Player-known</span> The party knows in-fiction.
+    &nbsp;&nbsp;
+    <span class="tag tag-le">L&amp;E only</span> Only Lucien &amp; Elenor know in-fiction.
+    &nbsp;&nbsp;
+    <span class="tag tag-ooc">OOC</span> Above-table only; PCs don't know.
+    &nbsp;&nbsp;
+    <span class="tag tag-dm">DM ruling</span> A house-rule or call from Brett.
+  </p>
+
+  <div class="footer">
+    — END OF SESSION III · Technical Summary —
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Death And Beyond — Session Recaps</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=MedievalSharp&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-alt: #16161f;
+    --border: #2a2235;
+    --border-glow: #3d2a4a;
+    --gold: #c9a84c;
+    --gold-dim: #8a7234;
+    --gold-bright: #e8c85a;
+    --red: #8b2d2d;
+    --red-bright: #c44040;
+    --text: #d4cfc6;
+    --text-dim: #8a857c;
+    --text-bright: #ede8df;
+    --void-purple: #2d1b4e;
+    --void-glow: #5a3d7a;
+    --frost: #4a6d8a;
+    --frost-bright: #6d9bc4;
+  }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at top, rgba(45, 27, 78, 0.18), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(139, 45, 45, 0.10), transparent 50%);
+    background-attachment: fixed;
+  }
+
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+    position: relative;
+  }
+
+  header::after {
+    content: "✦";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deep);
+    color: var(--gold);
+    padding: 0 16px;
+    font-size: 20px;
+  }
+
+  .eyebrow {
+    font-family: 'MedievalSharp', serif;
+    color: var(--gold-dim);
+    letter-spacing: 0.3em;
+    font-size: 13px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h1.site-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 52px;
+    line-height: 1.1;
+    color: var(--gold-bright);
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+    text-shadow: 0 0 24px rgba(201, 168, 76, 0.18);
+  }
+
+  .tagline {
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 18px;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    padding-left: 14px;
+    border-left: 3px solid var(--gold-dim);
+  }
+
+  .session-group {
+    margin-bottom: 48px;
+  }
+
+  .session-group .group-meta {
+    color: var(--text-dim);
+    font-size: 14px;
+    font-style: italic;
+    margin-bottom: 18px;
+    padding-left: 18px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 22px;
+  }
+
+  .card {
+    display: block;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold-dim);
+    padding: 26px 28px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0) 0%, rgba(201, 168, 76, 0.04) 100%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .card:hover {
+    border-color: var(--border-glow);
+    border-left-color: var(--gold-bright);
+    background: var(--bg-card-alt);
+    transform: translateY(-2px);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  .card.technical {
+    border-left-color: var(--frost);
+  }
+
+  .card.technical:hover {
+    border-left-color: var(--frost-bright);
+  }
+
+  .card .kicker {
+    font-family: 'MedievalSharp', serif;
+    color: var(--gold-dim);
+    letter-spacing: 0.2em;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .card.technical .kicker {
+    color: var(--frost);
+  }
+
+  .card h3 {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    color: var(--text-bright);
+    font-size: 22px;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+
+  .card .meta-line {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  .card .blurb {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .card .read-more {
+    display: inline-block;
+    margin-top: 14px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .card.technical .read-more {
+    color: var(--frost-bright);
+  }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  footer .ornament {
+    color: var(--gold-dim);
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 40px 20px 64px; }
+    h1.site-title { font-size: 36px; }
+    .tagline { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <div class="eyebrow">A Chronicle Of</div>
+      <h1 class="site-title">Death And Beyond</h1>
+      <p class="tagline">Session recaps from a campaign on the edge of the grave — kept for the table, in case anyone forgets what they swore over the last cold fire.</p>
+    </header>
+
+    <section class="session-group">
+      <h2 class="section-title">Session 3 — The Hand of a Drowned God</h2>
+      <p class="group-meta">Run on 29 April 2026</p>
+      <div class="cards">
+
+        <a class="card" href="s03-2026-04-29-party-recap.html">
+          <div class="kicker">Party Recap</div>
+          <h3>The Hand of a Drowned God</h3>
+          <div class="meta-line">A casual retelling for the table</div>
+          <div class="blurb">The short, readable version — what the party saw, did, and decided. Light on bookkeeping, heavy on the story.</div>
+          <span class="read-more">Read recap →</span>
+        </a>
+
+        <a class="card technical" href="s03-2026-04-29-the-drowned-hand.html">
+          <div class="kicker">Technical Summary</div>
+          <h3>The Hand of a Drowned God</h3>
+          <div class="meta-line">Detailed breakdown with rules, rolls &amp; outcomes</div>
+          <div class="blurb">The longer version: encounter notes, mechanical decisions, and a full account of what shifted in the world this session.</div>
+          <span class="read-more">Open summary →</span>
+        </a>
+
+      </div>
+    </section>
+
+    <section class="session-group">
+      <h2 class="section-title">Session 2 — Welcome to Ottahofn</h2>
+      <p class="group-meta">Run on 13 April 2026</p>
+      <div class="cards">
+
+        <a class="card" href="s02-2026-04-13-party-recap.html">
+          <div class="kicker">Party Recap</div>
+          <h3>Welcome to Ottahofn</h3>
+          <div class="meta-line">The party's arrival in a city that does not love the living</div>
+          <div class="blurb">First steps inside Ottahofn — introductions, contracts, and the early shape of what we've signed up for.</div>
+          <span class="read-more">Read recap →</span>
+        </a>
+
+      </div>
+    </section>
+
+    <footer>
+      <div class="ornament">✦ ✦ ✦</div>
+      <div>Death And Beyond is a homebrew D&amp;D 5e (2024) campaign. These pages are written for the table.</div>
+    </footer>
+
+  </div>
+</body>
+</html>

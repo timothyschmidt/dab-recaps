@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 3 — The Hand of a Drowned God</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=MedievalSharp&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-alt: #16161f;
+    --border: #2a2235;
+    --border-glow: #3d2a4a;
+    --gold: #c9a84c;
+    --gold-dim: #8a7234;
+    --gold-bright: #e8c85a;
+    --red: #8b2d2d;
+    --red-bright: #c44040;
+    --text: #d4cfc6;
+    --text-dim: #8a857c;
+    --text-bright: #ede8df;
+    --void-purple: #2d1b4e;
+    --void-glow: #5a3d7a;
+    --frost: #4a6d8a;
+    --frost-bright: #6d9bc4;
+  }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(74, 109, 138, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(45, 27, 78, 0.10) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── Header ── */
+  .session-header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .session-header::after {
+    content: '⛧';
+    display: block;
+    position: absolute;
+    bottom: -0.7em;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deep);
+    padding: 0 1rem;
+    color: var(--gold-dim);
+    font-size: 1.2rem;
+  }
+
+  .session-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 0 40px rgba(201, 168, 76, 0.15);
+  }
+
+  .session-meta {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .session-meta strong {
+    color: var(--text);
+    font-style: normal;
+  }
+
+  /* ── Summary block ── */
+  .summary-block {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-alt) 100%);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--frost);
+    border-radius: 4px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  /* ── Section headings ── */
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--gold);
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+    margin: 2rem 0 0.75rem;
+  }
+
+  h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--frost-bright);
+    margin: 1.25rem 0 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Numbered "Where We Left Off" cards ── */
+  .leftoff {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0 2rem;
+  }
+
+  .leftoff-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    transition: border-color 0.2s;
+  }
+
+  .leftoff-card:hover {
+    border-color: var(--border-glow);
+  }
+
+  .leftoff-num {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .leftoff-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    color: var(--text-bright);
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .leftoff-desc {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── Loot list ── */
+  .loot-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .loot-list li {
+    padding: 0.6rem 0 0.6rem 1.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.5);
+  }
+
+  .loot-list li:last-child { border-bottom: none; }
+
+  .loot-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold-dim);
+    font-size: 0.6rem;
+    top: 0.95rem;
+  }
+
+  .loot-item { color: var(--text-bright); font-weight: 600; }
+  .loot-note { color: var(--text-dim); font-size: 0.95rem; }
+
+  /* ── NPC Table ── */
+  .npc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 2rem;
+    font-size: 0.95rem;
+  }
+
+  .npc-table thead th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .npc-table tbody td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.4);
+    vertical-align: top;
+  }
+
+  .npc-table tbody tr:hover {
+    background: rgba(42, 34, 53, 0.2);
+  }
+
+  .npc-name {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  /* ── Bulleted lists for "What We Now Know" ── */
+  .know-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 1.5rem 0;
+  }
+
+  .know-list li {
+    padding: 0.6rem 0 0.6rem 1.5rem;
+    position: relative;
+    border-left: 2px solid var(--void-purple);
+    margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
+  }
+
+  .know-list li::before {
+    content: '⬥';
+    position: absolute;
+    left: -0.55rem;
+    color: var(--void-glow);
+    font-size: 0.5rem;
+    top: 0.85rem;
+    background: var(--bg-deep);
+    padding: 0.2rem 0;
+  }
+
+  .know-list strong {
+    color: var(--text-bright);
+  }
+
+  /* ── Void-Taint table ── */
+  .vt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0 1.5rem;
+    font-size: 0.95rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .vt-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(45, 27, 78, 0.2);
+  }
+
+  .vt-table td {
+    padding: 0.65rem 0.9rem;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(42, 34, 53, 0.4);
+  }
+
+  .vt-table tr:last-child td { border-bottom: none; }
+
+  .vt-pc { color: var(--text-bright); font-weight: 600; white-space: nowrap; }
+
+  /* ── Quote block ── */
+  .quote {
+    border-left: 3px solid var(--gold-dim);
+    background: var(--bg-card);
+    padding: 0.85rem 1.25rem;
+    margin: 0.75rem 0 1rem;
+    font-style: italic;
+    color: var(--text-bright);
+  }
+
+  .quote-speaker {
+    display: block;
+    font-style: normal;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--gold-dim);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  /* ── Speech block (Brett's big speech) ── */
+  .speech-block {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(45, 27, 78, 0.15) 100%);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  /* ── Pill-style house rule list ── */
+  .pill-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pill-list li {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .pill-list strong { color: var(--text-bright); }
+
+  /* ── OOC note ── */
+  .ooc-note {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+
+  .ooc-note::before {
+    content: 'OOC';
+    font-family: 'Cinzel', serif;
+    font-style: normal;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    margin-right: 0.5rem;
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    vertical-align: 1px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .container { padding: 1rem; }
+    h1 { font-size: 1.8rem; }
+    .leftoff { grid-template-columns: 1fr; }
+    .npc-table, .vt-table { font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="session-header">
+    <div class="session-number">Session III</div>
+    <h1>The Hand of a Drowned God</h1>
+    <div class="session-meta">
+      Wednesday 29 April 2026 · <strong>Full table</strong><br>
+      Tim (Neko) · Adam (Elenor) · Michael (Lucien) · Scott (Ashen) · Reign (Vergrad) · Joel (Yorika)
+    </div>
+  </header>
+
+  <div class="summary-block">
+    The party signed on with a skeletal sea-captain named <strong>Imar Marrowhands</strong> ("it's pronounced <em>Ivar</em>, the spelling lies") for a single-day shark-guts hunt out of the Slaughter Ramp. About an hour into the journey, <strong>a colossal hand of a drowned god rose out of the ice</strong>, started crushing minds with pulsing white light, and yanked the boat off course while half the party was charmed. The party blindfolded their way out of it with cloth strips, hat brims, and <strong>Neko's own hydraulic fluid smeared on his face plate</strong>. Elenor switched into her batkin form for the first time in play (she normally appears human-passing) and used echolocation to fly the rigging while blind. They lived; the hand sank back beneath the ice. The actual shark-guts hunt that followed was textbook by comparison — gunpowder satchel + Imar's loaned flintlock pistol blew the corpse open, exposed the parasite tentacles, Ashen got grappled into the void-water, and Neko leapt off the rail to break him free. <strong>Lucien picked up his first level of Void Taint (whispers + Wis disadvantage); Yorika escalated to level 2</strong> (now also blinded in bright light). Imar paid the full 20 gp, then quietly recruited the party as <strong>spies on the Rewritten</strong>. Back at the inn, Julian dropped a bombshell: <strong>Sultan Keshen knows there are two vampires in town.</strong> And above-table, Brett confirmed: <strong>Fionrir Starsundr is rising in power — that's why Lilith sent Elenor.</strong> Drinks with Imar tomorrow.
+  </div>
+
+  <h2>Where We Left Off</h2>
+  <p>At The Rotting Boot Inn, the morning after the shark-guts hunt. Specifically:</p>
+
+  <div class="leftoff">
+    <div class="leftoff-card">
+      <div class="leftoff-num">01</div>
+      <div class="leftoff-title">Drinks with Imar</div>
+      <div class="leftoff-desc">Tomorrow afternoon — to formalise the spy contract on the Rewritten.</div>
+    </div>
+    <div class="leftoff-card">
+      <div class="leftoff-num">02</div>
+      <div class="leftoff-title">The Sultan Closes In</div>
+      <div class="leftoff-desc">Sultan Keshen knows "two vampires are in town" — Lucien &amp; Elenor on a ticking clock.</div>
+    </div>
+    <div class="leftoff-card">
+      <div class="leftoff-num">03</div>
+      <div class="leftoff-title">Brynja's Storm Mission</div>
+      <div class="leftoff-desc">Promised in s02 in exchange for healing — still owed, never undertaken.</div>
+    </div>
+    <div class="leftoff-card">
+      <div class="leftoff-num">04</div>
+      <div class="leftoff-title">Level Up to 2</div>
+      <div class="leftoff-desc">Happens in-fiction during s04. Bring your sheets ready.</div>
+    </div>
+  </div>
+
+  <h2>Loot &amp; Money</h2>
+  <ul class="loot-list">
+    <li><span class="loot-item">20 gp from Imar</span> — paid in full (the full take). <span class="loot-note">Per-PC distribution not yet sorted.</span></li>
+    <li><span class="loot-item">Fur-lined long coats ×2</span> <span class="loot-note">— Ashen and Lucien took them. Advantage on cold-weather saves.</span></li>
+    <li><span class="loot-item">Adventuring gear sack from Julian</span> <span class="loot-note">— bedrolls, pitons, torches, bags. Covered by Lucien's existing arrangement.</span></li>
+    <li><span class="loot-item">Wooden stakes ×2</span> <span class="loot-note">— Vergrad-crafted, given to Lucien. Vampire-staking.</span></li>
+    <li><span class="loot-item">Net (Yorika's barbed-net experiment) — destroyed.</span> <span class="loot-note">Ate caltrops, broke completely. Imar shrugged it off.</span></li>
+    <li><span class="loot-item">Flintlock pistol (briefly Ashen's)</span> <span class="loot-note">— Imar pickpocketed it back without Ashen noticing. Passive perception 7 strikes again.</span></li>
+    <li><span class="loot-item">Vergrad's debt: still 35 gp.</span> <span class="loot-note">He chose not to chip away from the 20 gp this session.</span></li>
+  </ul>
+
+  <h2>People Met</h2>
+  <table class="npc-table">
+    <thead>
+      <tr><th>Who</th><th>What</th><th>Where</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="npc-name">Imar Marrowhands ("Ivar")</td>
+        <td>Skeletal Atrum Rex–aligned bardcaster, captain of a "borrowed" sloop</td>
+        <td>Slaughter Ramp / out at sea</td>
+      </tr>
+      <tr>
+        <td class="npc-name">The Dockmaster (unnamed)</td>
+        <td>Rewritten ledger-bearer; grafted, balding, 3 guards</td>
+        <td>Slaughter Ramp</td>
+      </tr>
+      <tr>
+        <td class="npc-name">Sultan Keshen</td>
+        <td>Local Order of the Ashen Rose leader at the Ottahofn church (Order ultimately serves Saint Isdor)</td>
+        <td>Ottahofn church (offscreen)</td>
+      </tr>
+      <tr>
+        <td class="npc-name">A chained, willing prisoner</td>
+        <td>Upstairs at The Rotting Boot Inn — Elenor's feeding arrangement</td>
+        <td>The Rotting Boot Inn</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>What We Now Know</h2>
+  <ul class="know-list">
+    <li><strong>At least one "drowned god" exists.</strong> Imar has fought a hand of one before this one. Nothing is known about what's beneath the wrist. <em>Possible</em> connection to the established <strong>Drowned King</strong> Pact entity — speculative, not confirmed.</li>
+    <li><strong>Imar serves Atrum Rex</strong> — confirmed via his shanty (the "risen tyrant sea" / "deathless throne" lyrics) and Lucien's history check.</li>
+    <li><strong>Ottahofn is in Jotungore = Atrum Rex's domain.</strong> His seat is <strong>Sorrowhold Bastion / the Deathless Throne</strong>. The party is currently in his territory.</li>
+    <li><strong>Atrum Rex and the Rewritten are different factions.</strong> The Rewritten are <strong>NOT</strong> backed by a Gravelord — they're operating in Atrum Rex's own domain without his support.</li>
+    <li><strong>Gravelords earn their power over time — they aren't appointed.</strong> The Undying Accord is ~80 years old; it prevents open faction war, which is why Imar can openly recruit on the docks without consequence.</li>
+    <li><strong>Sultan Keshen knows "two vampires are in town"</strong> but hasn't ID'd Lucien &amp; Elenor specifically yet. Ticking clock.</li>
+    <li><strong>The Order of the Ashen Rose</strong> (Keshen's faction) ultimately serves <strong>Gravelord Saint Isdor</strong> in Gravenholme.</li>
+    <li><strong>Shark guts mechanics:</strong> parasite inside dead host. Body is just a shield (+2 AC). Parasite has Damage Transfer while grappling. Gunpowder works.</li>
+    <li><strong>Void Taint is unshakable</strong> outside settlements. Fur coats give advantage on cold-weather saves. Long rests + good rolls cleanse it.</li>
+  </ul>
+
+  <div class="ooc-note">
+    <strong>Above-table for Lucien &amp; Elenor only:</strong> Lilith sent Elenor specifically to monitor <strong>Fionrir Starsundr</strong>, who is gaining power that rivals what Lilith doesn't want her to have. Fionrir may be a <strong>potential gravelord-tier usurper.</strong>
+  </div>
+
+  <h4>Void Taint mechanical recap (cumulative — current level + all lower)</h4>
+  <table class="vt-table">
+    <thead>
+      <tr><th>PC</th><th>Level</th><th>Effects</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="vt-pc">Lucien</td>
+        <td>1</td>
+        <td>Constant unintelligible whispers; disadvantage on Wis Perception checks and Wis saving throws.</td>
+      </tr>
+      <tr>
+        <td class="vt-pc">Yorika</td>
+        <td>2</td>
+        <td>All of Level 1 <em>plus</em>: eyes turn black, 60 ft darkvision, <strong>blinded in bright light</strong>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Brett's Big Speech</h2>
+  <div class="speech-block">
+    <p>Mid-combat with the drowned hand, Brett pulled the party out and asked them to think outside the rules-as-written box: cover your eyes, move the wheel, shake your teammates out of stupors, mess with the rigging. The party listened — Elenor went bat, Ashen blindfolded with his robe strip, Vergrad druidcrafted into the rudder, Neko smeared hydraulic fluid on his face plate. Brett: <em>"I'd encourage a bit more of that. Yeah."</em></p>
+    <p style="margin-top:0.75rem;">Combat is going to keep being weird and creative for a while; Brett wants level 3 sooner rather than later so the party gets subclass features and stops feeling like one missed attack ends a turn.</p>
+  </div>
+
+  <h2>Quotes of the Session</h2>
+
+  <div class="quote">
+    <span class="quote-speaker">Imar to Ashen (who'd just admitted he can't swim)</span>
+    "Don't worry. I'll just be sure if you do fall in, I'll keep the boat rolling. No one will ever, ever know you went missing."
+  </div>
+
+  <div class="quote">
+    <span class="quote-speaker">Imar to Elenor (recognising her as Batkin)</span>
+    "If you get strong enough, you get tolerated. It's only while you're weak that they treat you like you're a leper or try to kill you."
+  </div>
+
+  <div class="quote">
+    <span class="quote-speaker">Brett through Imar to Yorika</span>
+    "You all seem like you're trying to live in a world that's a little different than the one you do. It might be time to start adopting new ways of life."
+  </div>
+
+  <div class="quote">
+    <span class="quote-speaker">Yorika to Vergrad</span>
+    "You can't keep taking payment up front and not doing the job. This is how you got into this mess in the first place."
+  </div>
+
+  <div class="quote">
+    <span class="quote-speaker">Ashen, choosing violence in the cold-water grapple</span>
+    "One of us is going to have to choose violence, so I'll take that role."
+  </div>
+
+  <h2>House Rule Reminders</h2>
+  <ul class="pill-list">
+    <li><strong>Nat 20 on skill checks = critical success</strong> — formalised this session.</li>
+    <li><strong>Underwater attack disadvantage doesn't apply on the surface.</strong></li>
+    <li><strong>Snuggling in Yorika's bosom = advantage on cold weather saves</strong> (one cat at a time).</li>
+    <li><strong>Cold-weather long coats = advantage on cold-weather saves</strong> (not resistance).</li>
+  </ul>
+
+  <div class="footer">
+    — END OF SESSION III —
+  </div>
+
+</div>
+</body>
+</html>
